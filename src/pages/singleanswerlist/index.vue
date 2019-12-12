@@ -4,7 +4,7 @@
     <div class="write_mask" v-show="write_bool">
       <img src="../../../static/image/close.gif" alt="" @click="write_bool=false">
       <div class="title">
-        <p>怎么评价马云？</p>
+        <p>{{question.title}}</p>
         <p>草稿已保存</p>
       </div>
       <img src="../../../static/image/write.png" alt="" @click="sendanswer">
@@ -20,13 +20,15 @@
         <div class="tags"><span>自然科学</span>
           <span>动物</span><span>冷知识</span></div>
         <p class="header">{{content.title}}</p>
-        <p class="sub_tile">你的来你想呢不会痛吗</p>
+        <p class="sub_tile">{{question.title}}</p>
         <div class="infos">
           <span>963人关注 9条评论</span><button>已关注</button>
         </div>
         <div class="btn_area">
-          <span @click="write_bool=true"><img src="../../../static/image/invite.gif" alt="">邀请回答</span>
-          <span><img src="../../../static/image/write.png" alt="">添加回答</span>
+          <ul class="flex">
+            <li class="flex-item"><span @click="write_bool=true"><img src="../../../static/image/invite.gif" alt="">邀请回答</span></li>
+            <li class="flex-item" @click="write_bool=true"><span><img src="../../../static/image/write.png" alt="">添加回答</span></li>
+          </ul>
           </div>
         <div class="separator1"><span>85个回答</span>
         <span>按质量排序</span></div>
@@ -56,6 +58,7 @@
                 motto: 'Hello World',
                 userInfo: {},
                 content:[],
+                question:[],
                 follow_text:'关注',
                 id:0,
                 write_bool:false,
@@ -65,11 +68,27 @@
         onLoad() {
             var that=this;
             that.id = this.$root.$mp.query.id || 1
-            this.answerlist();
-
-            console.log('oneload')
+            this.getQuestionDetail()
         },
         methods: {
+          async save_answer () {
+              var that = this;
+              let res = await this.$post('answer/write-answer',{author_id:that.content.author_id,answer_content:that.answer_content,
+                answer_id:that.id})
+              if(res.state==1){
+                wx.showToast({
+
+                      title:"发布成功",
+                      duration: 2000,//提示的延迟时间，单位毫秒，默认：1500 
+
+                      mask: false,//是否显示透明蒙层，防止触摸穿透，默认：false 
+
+                      
+
+                    })
+
+              }
+          },
             gotocomment (key) {
                 const url = '../comment/main?id='+key
                 wx.navigateTo({ url })
@@ -85,18 +104,20 @@
                     that.follow_text ='已关注';
                 }
             },
-            async answerlist (msg, ev) {
+            async getQuestionDetail (msg, ev) {
                 var that = this;
-                that.id=1;
-                let res = await this.$post('answer/answerlist',{id:that.id})
-                that.content = res;
+                console.log(that.id)
+                let res = await this.$post('question/detail',{id:that.id})
+                that.content = res.answers;
+                that.question = res.question;
                 console.log(that.productlist)
             },
+
             async sendanswer (msg, ev) {
                 var that = this;
                 that.id=1;
-                let res = await this.$post('answer/writeanswer',{answer_id:that.id,answer_content:that.answer_content})
-                if(res['state'] ==1){
+                let res = await this.$post('question/write-answer',{question_id:that.question.id,answer_content:that.answer_content})
+                if(res.state ==1){
                     wx.showToast({
                         title: '成功',
                         icon: 'succes',
@@ -104,7 +125,7 @@
                         mask:true
                     })
                     that.write_bool=false;
-                    that.content=res['content'];
+                    that.content=res.answers;
                 }
             },
 
@@ -115,6 +136,18 @@
 </script>
 
 <style scoped lang="less">
+  .flex {
+    display: flex;
+    flex-direction: row;
+    margin-top:30rpx
+  }
+
+  .flex-item {
+    width: 47%;height:90rpx;line-height:90rpx;border:2rpx solid #fcfcfc
+  }
+
+  .flex-item span{font-size:26rpx}
+
   .tags{
     border-top: 2rpx solid #d2d2d2;
     width: 100%;

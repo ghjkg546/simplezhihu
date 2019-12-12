@@ -8,9 +8,8 @@
     </div>
     <div class="quest_item" v-for="(item, itemIndex) in productlist" :key="item.id" @click="bindViewTap(item.id)">
       <div class="wrap">
-        <p class="question" >如何看待PDD预言中了</p>
-        <p class="header" >{{item.voter}}赞同了该答案a</p>
-        <p class="content">{{item.title}}</p>
+        <p class="question" @click="goToAnswerList(item.id)">{{item.title}}</p>
+        <p class="content">{{item.content}}</p>
         <p class="main">
           {{item.up_count}}赞同-3评论-3关注问题
         </p>
@@ -46,10 +45,14 @@ export default {
       const url = '../product/main?id='+key
       wx.navigateTo({ url })
     },
+    goToAnswerList (id) {
+      const url = '../singleanswerlist/main?id='+id
+      wx.navigateTo({ url })
+    },
       async clickHandle1 (msg, ev) {
           var that = this;
           console.log('fun')
-          let res = await this.$post('answer',{type:0})
+          let res = await this.$post('question',{type:0})
           console.log(res);
           that.productlist = res;
 
@@ -71,7 +74,7 @@ export default {
           var that = this;
           that.activeIndex=key;
           console.log('fun')
-          let res = await this.$post('answer',{type:key})
+          let res = await this.$post('question',{type:key})
           console.log(res);
           that.productlist = res;
 

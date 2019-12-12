@@ -113,9 +113,6 @@
                   wx.showToast({
 
                         title:"发布成功",
-
-                       
-
                         duration: 2000,//提示的延迟时间，单位毫秒，默认：1500 
 
                         mask: false,//是否显示透明蒙层，防止触摸穿透，默认：false 
