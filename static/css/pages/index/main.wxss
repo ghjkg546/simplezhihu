@@ -1,0 +1,48 @@
+@import "/static/css/vendor.wxss";
+
+.container.data-v-5eca2e54 {
+  background-color: #eaeaea;
+  height: 100%;
+  background-size: contain;
+}
+.tabs.data-v-5eca2e54 {
+  width: 100%;
+  background: #f54353;
+  font-size: 24rpx;
+  height: 80rpx;
+}
+.tabs ._ul ._li.data-v-5eca2e54 {
+  width: 33%;
+  display: inline-block;
+  text-align: center;
+  line-height: 80rpx;
+  color: #fff;
+  border-bottom: 4rpx solid #f54353;
+}
+.tabs ._ul ._li.active.data-v-5eca2e54 {
+  border-bottom: 4rpx solid #f9e98a;
+}
+.quest_item.data-v-5eca2e54 {
+  width: 100%;
+  background-color: #fff;
+  margin-top: 20rpx;
+}
+.wrap.data-v-5eca2e54 {
+  margin-left: 40rpx;
+}
+.quest_item .header.data-v-5eca2e54 {
+  font-size: 24rpx;
+  color: #aeaeae;
+  width: 100%;
+  padding: 20rpx 0;
+}
+.quest_item .content.data-v-5eca2e54 {
+  font-size: 30rpx;
+  color: #000;
+  width: 100%;
+}
+.quest_item .main.data-v-5eca2e54 {
+  margin: 40rpx 0;
+  color: #aeaeae;
+  font-size: 30rpx;
+}
