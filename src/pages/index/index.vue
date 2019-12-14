@@ -42,7 +42,7 @@ export default {
   methods: {
 
     bindViewTap (key) {
-      const url = '../product/main?id='+key
+      const url = '../answerdetail/main?id='+key
       wx.navigateTo({ url })
     },
     goToAnswerList (id) {

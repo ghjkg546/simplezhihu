@@ -14,11 +14,11 @@
           <p>68</p>
           <p>关注</p>
         </li>
-        <li @click="goToMyFav()">
+        <li @click="goToMyFav('fav')">
           <p>68</p>
           <p>我的收藏</p>
         </li>
-        <li>
+        <li @click="goToMyFav('recent')">
           <p>68</p>
           <p>最近浏览</p>
         </li>
@@ -45,8 +45,8 @@
                 let res = await this.$post('answer/comment',{id:that.id})
                 that.list = res;
             },
-            goToMyFav () {
-              const url = '../myfav/main'
+            goToMyFav (type) {
+              let url = '../myfav/main?type='+type
               wx.navigateTo({ url })
             },
 

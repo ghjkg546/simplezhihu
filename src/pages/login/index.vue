@@ -1,28 +1,21 @@
 <template>
-  <div class="container">
-    <div class="item" v-for="(item, key) in list"  :key="index">
-      <div class="avatar">
-        <img src="../../../static/image/avt2.jpeg" class="avt">
-      </div>
-      <div class="right_area">
-
-
-      </div>
-
-    </div>
-    用户名：<input type="text" v-model="name">
-    密码<input type="text" v-model="password">
-    <button @click="dologin()">登录</button>
-  </div>
+<div>
+   <i-panel title="登录">
+       <i-input :value="name" title="登录名" @change="setUserName" autofocus placeholder="请输入用户名" maxlength="50" />
+       <i-input v-model="password" title="密码"  @change="setPassword" :id="password" type="password" placeholder="请输入密码" maxlength="50" />
+   </i-panel>
+    <i-button type="success" @click="dologin">登录</i-button>
+</div>
 </template>
 
 <script>
     export default {
         data () {
             return {
-                name:'',
+                name:'111',
                 comment_text:'',
-                id:0
+                id:0,
+                password:'656565'
             }
         },
         onLoad() {
@@ -41,8 +34,20 @@
                     })
                     const url = '../my/main'
                     wx.navigateTo({ url })
+                } else {
+                  wx.showToast({
+                        title:res.text,
+                        duration: 2000,//提示的延迟时间，单位毫秒，默认：1500 
+                        mask: false,//是否显示透明蒙层，防止触摸穿透，默认：false 
+                  })
                 }
             },
+            setUserName(e){
+              this.name=e.mp.detail.detail.value;
+            },
+            setPassword(e){
+              this.password=e.mp.detail.detail.value;
+            }
 
         },
         created () {

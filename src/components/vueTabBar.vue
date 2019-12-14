@@ -24,13 +24,13 @@
                         pagePath: "../orderList/main",
                         iconPath: "/static/image/wode.gif",
                         selectedIconPath: "/static/images/order-active.png",
-                        text: "想法"
+                        text: "会员"
                     },
                     {
                         pagePath: "../notice/main",
                         iconPath: "/static/image/index.gif",
                         selectedIconPath: "/static/images/icon-notice-active.png",
-                        text: "市场"
+                        text: "通知"
                     },
                     {
                         pagePath: "../my/main",
