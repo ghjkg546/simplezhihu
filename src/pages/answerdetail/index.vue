@@ -1,6 +1,15 @@
 <template>
-  <div class="container">
 
+  <div class="container">
+    <div class="fav_mask" v-show="show_fav"  @click="show_fav=false">
+    </div>
+    <div class="fav_panel" v-show="show_fav">
+      <ul>
+        <li @click="add_to_fav(item.id)" v-for="(item, key) in fav" :key="index"><p>{{item.category_name}}</p>
+          <p class="fav_bottom">{{item.answer_count}}个内容</p>
+        </li>
+      </ul>
+    </div>  
     <div class="write_mask" v-show="write_bool">
       <img src="../../../static/image/close.gif" alt="" @click="write_bool=false">
       <div class="title">
@@ -10,8 +19,6 @@
         <div class="title_right">
           <img src="../../../static/image/write.png" alt="" class="save_btn"  @click="save_answer()">
         </div>
-
-        
       </div>
       
       <div class="clearfix"></div>
@@ -19,6 +26,7 @@
         <textarea name="" id="" cols="30" rows="10" :value="answer_content" />
       </div>
     </div>
+
     <div class="quest_item">
       <div class="wrap">
         <p class="header">{{content.title}}</p>
@@ -52,7 +60,6 @@
         <span class="spe">
           <img src="../../../static/image/down.png" alt="" class="vote">
         </span>
-
       </div>
 
       <div class="right_area">
@@ -60,9 +67,9 @@
           <li>
             <img src="../../../static/image/like.png" alt="" class="vote1">
             <p>感谢</p></li>
-          <li>
-            <img src="../../../static/image/star.png" alt="" class="vote1">
-            <p>收藏</p></li>
+          <li @click="show_fav=true">
+            <img v-bind:src="fav_img" alt="" class="vote1">
+            <p>{{fav_text}}</p></li>
           <li>
             <img src="../../../static/image/comment.png" alt="" class="vote1" @click="gotocomment(content.id)">
             <p>评论</p></li>
@@ -77,20 +84,24 @@
     export default {
         data () {
             return {
-                motto: 'Hello World',
+                show_fav:false,
                 userInfo: {},
                 content:[],
                 answer_content:'',
                 answer_count:0,
                 follow_text:'关注',
                 id:0,
-                write_bool:false
+                write_bool:false,
+                visible1: false,
+                fav:[],
+                fav_text: '收藏',
+                fav_img:  require('../../../static/image/star.png')
             }
         },
         onShow() {
             var that=this;
             that.id = this.$root.$mp.query.id || 1
-            this.clickHandle2();
+            this.loadanswerdetail();
         },
         methods: {
             gotocomment (key) {
@@ -102,6 +113,19 @@
                 let res = await this.$post('answer/follow-author',{author_id:that.content.author_id})
                 if(res.state==1){
                     that.follow_text ='已关注';
+                }
+            },
+            async add_to_fav (cate_id) {
+                var that = this;
+                let res = await this.$post('fav/add',{answer_id:that.id,cate_id:cate_id})
+                if(res.state==1){
+                    this.show_fav = !this.show_fav;
+                    that.fav = res.fav;
+                    wx.showToast({
+                          title:"添加成功",
+                          duration: 2000,//提示的延迟时间，单位毫秒，默认：1500 
+                          mask: false,//是否显示透明蒙层，防止触摸穿透，默认：false 
+                    })
                 }
             },
             async save_answer () {
@@ -117,12 +141,17 @@
 
                 }
             },
-            async clickHandle2 (msg, ev) {
+            async loadanswerdetail (msg, ev) {
                 var that = this;
 
                 let res = await this.$post('answer/detail',{id:that.id})
                 that.content = res.content;
                 that.answer_count = res.answer_count;
+                that.fav = res.fav;
+                that.fav_text = res.is_fav==1?'已收藏':'收藏';
+                if(res.is_fav == 1){
+                  that.fav_img = require('../../../static/image/star_blue.png')
+                }
             },
             async voteit (msg, ev) {
                 var that = this;
@@ -142,6 +171,23 @@
 </script>
 
 <style scoped lang="less">
+  .fav_mask{width:100%;
+  height:100%;
+  position:fixed;
+  background-color:#999;
+  z-index:15;
+  top:0;
+  left:0;
+  opacity:0.5;}
+  .fav_panel{
+    position: fixed;bottom:0rpx;z-index: 25;background-color:#fff;width:100%;border-top:1px solid #e2e2e2;
+  }
+  .fav_panel li{list-style-type:none;height:140rpx;border-bottom:1px solid #e2e2e2;
+      p{margin-top:10rpx;margin-left:20rpx}
+      .fav_bottom{margin-bottom:10prx}
+    }
+
+
   .write_mask{
     position: absolute;left: 0;top:0;z-index: 2;background: #fff;
     width:100%;height:100%;
@@ -241,8 +287,6 @@
      background-color: #0084ff;color: #fff;line-height: 70rpx;margin-right: 28rpx}
   }
 
-
-
   .quest_item .right_area button{
     width: 160rpx;
     height:60rpx;
@@ -265,6 +309,9 @@
     clear:both;
   }
 
+  .fullscreen{
+    width:100%
+  }
 
 
 

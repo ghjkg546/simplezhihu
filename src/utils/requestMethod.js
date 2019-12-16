@@ -1,4 +1,5 @@
-let serverPath = 'http://local.frontend.vue.com/'
+//let serverPath = 'http://local.frontend.vue.com/'
+let serverPath = 'http://192.168.2.236/'
 export function post(url,body) {
     let token =  wx.getStorageSync('token') || '';
 

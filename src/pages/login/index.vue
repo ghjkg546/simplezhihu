@@ -32,7 +32,7 @@
                         key:"token",
                         data:res.data.token
                     })
-                    const url = '../my/main'
+                    const url = '../index/main'
                     wx.navigateTo({ url })
                 } else {
                   wx.showToast({

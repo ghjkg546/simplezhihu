@@ -42,6 +42,7 @@ export default {
   methods: {
 
     bindViewTap (key) {
+      console.log(key)
       const url = '../answerdetail/main?id='+key
       wx.navigateTo({ url })
     },
