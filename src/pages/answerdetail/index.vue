@@ -67,7 +67,7 @@
           <li>
             <img src="../../../static/image/like.png" alt="" class="vote1">
             <p>感谢</p></li>
-          <li @click="show_fav=true">
+          <li @click="show_fav_panel()">
             <img v-bind:src="fav_img" alt="" class="vote1">
             <p>{{fav_text}}</p></li>
           <li>
@@ -108,6 +108,25 @@
                 const url = '../comment/main?id='+key
                 wx.navigateTo({ url })
             },
+            async show_fav_panel(){
+              let that = this;
+              if(that.fav_text=='已收藏'){
+                let res = await this.$post('fav/remove',{answer_id:that.id})
+                if(res.state==1){
+                    that.fav_text = '收藏';
+                    that.fav_img = require('../../../static/image/star.png');
+                    this.show_fav = false;
+                    that.fav = res.fav;
+                    wx.showToast({
+                          title:"操作成功",
+                          duration: 2000,//提示的延迟时间，单位毫秒，默认：1500 
+                          mask: false,//是否显示透明蒙层，防止触摸穿透，默认：false 
+                    })
+                }
+              } else {
+                that.show_fav=true
+              }
+            },
             async follow_author () {
                 var that = this;
                 let res = await this.$post('answer/follow-author',{author_id:that.content.author_id})
@@ -118,14 +137,17 @@
             async add_to_fav (cate_id) {
                 var that = this;
                 let res = await this.$post('fav/add',{answer_id:that.id,cate_id:cate_id})
+                
                 if(res.state==1){
                     this.show_fav = !this.show_fav;
                     that.fav = res.fav;
                     wx.showToast({
-                          title:"添加成功",
+                          title:"操作成功",
                           duration: 2000,//提示的延迟时间，单位毫秒，默认：1500 
                           mask: false,//是否显示透明蒙层，防止触摸穿透，默认：false 
                     })
+                    that.fav_img = require('../../../static/image/star_blue.png');
+                    that.fav_text = '已收藏';
                 }
             },
             async save_answer () {
@@ -151,6 +173,8 @@
                 that.fav_text = res.is_fav==1?'已收藏':'收藏';
                 if(res.is_fav == 1){
                   that.fav_img = require('../../../static/image/star_blue.png')
+                } else {
+                  that.fav_img = require('../../../static/image/star.png')
                 }
             },
             async voteit (msg, ev) {
