@@ -2,11 +2,11 @@
   <div class="container">
     <div class="header">
       <p class="name">周晓杰</p>
-      <p class="chakan">查看或编辑个人主页</p>
+      <!-- <p class="chakan">查看或编辑个人主页</p> -->
     </div>
     <div class="list">
       <ul>
-        <li>
+        <li @click="goToMyAnswer()">
           <p>68</p>
           <p>我的创作</p>
         </li>
@@ -47,6 +47,10 @@
             },
             goToMyFav (type) {
               let url = '../myfav/main?type='+type
+              wx.navigateTo({ url })
+            },
+            goToMyAnswer () {
+              let url = '../myanswer/main'
               wx.navigateTo({ url })
             },
 
