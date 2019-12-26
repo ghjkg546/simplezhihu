@@ -15,7 +15,7 @@
       class="quest_item"
       v-for="(item, itemIndex) in favlist"
       :key="item.id"
-      @click="bindViewTap(item.category_name)"
+      @click="bindViewTap(item.category_id)"
       v-show="type=='fav'"
     >
       <div class="wrap">
@@ -68,7 +68,7 @@ export default {
       wx.navigateTo({ url });
     },
     bindViewTap(key) {
-      const url = "../favlist/main?id=" + key;
+      const url = "../favlist/main?category_id=" + key;
       wx.navigateTo({ url });
     },
     async clickHandle1(msg, ev) {

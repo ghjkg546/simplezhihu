@@ -19,12 +19,14 @@
 export default {
   data() {
     return {
-      motto: "Hello World",
-      tabs: ["关注", "推荐", "榜单"],
-      activeIndex: 1,
       userInfo: {},
-      productlist: []
+      category_id:0
     };
+  },
+  onLoad() {
+    let that = this;
+    that.category_id = this.$root.$mp.query.category_id || 1;
+    this.getFavList();
   },
 
   methods: {
@@ -32,23 +34,10 @@ export default {
       const url = "../product/main?id=" + key;
       wx.navigateTo({ url });
     },
-    async clickHandle1(msg, ev) {
+    async getFavList(msg, ev) {
       var that = this;
-      let res = await this.$post("fav/list", { category_name: key });
-      console.log(res);
+      let res = await this.$post("fav/list", { category_id: that.category_id });
       that.productlist = res;
-    },
-    getUserInfo() {
-      // 调用登录接口
-      wx.login({
-        success: () => {
-          wx.getUserInfo({
-            success: res => {
-              this.userInfo = res.userInfo;
-            }
-          });
-        }
-      });
     },
     async tabClick(key) {
       var that = this;
@@ -64,9 +53,6 @@ export default {
   },
 
   created() {
-    // 调用应用实例的方法获取全局数据t
-    this.clickHandle1();
-    this.getUserInfo();
   }
 };
 </script>

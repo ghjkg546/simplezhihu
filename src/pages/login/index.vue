@@ -26,7 +26,7 @@
 export default {
   data() {
     return {
-      name: "111",
+      name: "",
       comment_text: "",
       id: 0,
       password: "656565"
