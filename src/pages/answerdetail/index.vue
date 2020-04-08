@@ -64,19 +64,18 @@
 
       <div class="right_area">
         <ul>
-          <li>
-            <img src="../../../static/image/like.png" alt="" class="vote1">
-            <p>感谢</p></li>
+          <li @click ="updateThankState()">
+            <span :class="thank_text == '感谢' ?'iconfont icon-shoucang':'iconfont icon-like'"></span>
+            <p>{{thank_text}}</p></li>
           <li @click="show_fav_panel()">
-            <img v-bind:src="fav_img" alt="" class="vote1">
+            <span :class="fav_text == '收藏' ?'iconfont icon-shoucang1':'iconfont icon-favfill'"></span>
             <p>{{fav_text}}</p></li>
-          <li>
-            <img src="../../../static/image/comment.png" alt="" class="vote1" @click="gotocomment(content.id)">
+          <li @click = "gotocomment()">
+            <span class="iconfont icon-pinglun"></span>
             <p>评论</p></li>
         </ul>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -94,8 +93,8 @@
                 write_bool:false,
                 visible1: false,
                 fav:[],
-                fav_text: '收藏',
-                fav_img:  require('../../../static/image/star.png')
+                thank_text : '感谢',
+                fav_text: '收藏'
             }
         },
         onShow() {
@@ -104,6 +103,9 @@
             this.loadanswerdetail();
         },
         methods: {
+            updateThankState(){
+              this.thank_text = this.thank_text== '感谢'?'已感谢':'感谢'
+            },
             gotocomment (key) {
                 const url = '../comment/main?id='+key
                 wx.navigateTo({ url })
@@ -195,6 +197,7 @@
 </script>
 
 <style scoped lang="less">
+  .iconfont{font-size:20px}
   .fav_mask{width:100%;
   height:100%;
   position:fixed;

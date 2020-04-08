@@ -9,34 +9,20 @@
           @click="tabClick(key)"
         >{{ value }}</li>
       </ul>
-      <p v-show="type=='recent'" class="title">最近浏览</p>
     </div>
     <div
       class="quest_item"
-      v-for="(item, itemIndex) in favlist"
-      :key="item.id"
-      @click="bindViewTap(item.category_id)"
-      v-show="type=='fav'"
-    >
-      <div class="wrap">
-        <p class="header">{{item.category_name}}</p>
-        <p class="content">{{item.cate_count}}条</p>
-      </div>
-    </div>
-
-    <div
-      class="quest_item"
-      v-for="(item, itemIndex) in favlist"
+      v-for="(item, itemIndex) in productlist"
       :key="item.id"
       @click="bindViewTap(item.id)"
-      v-show="type=='recent'"
     >
       <div class="wrap">
         <p class="question" @click="goToAnswerList(item.id)">{{item.title}}</p>
         <p class="content">{{item.content}}</p>
-        <p class="main">{{item.up_count}}赞同-3评论-3关注问题</p>
+        <p class="main">{{item.up_count}}赞同-3评论-3关注问题111</p>
       </div>
     </div>
+    <vue-tab-bar></vue-tab-bar>
   </div>
 </template>
 
@@ -46,43 +32,33 @@ export default {
   data() {
     return {
       motto: "Hello World",
-      tabs: ["我的收藏", "热门收藏"],
+      tabs: ["关注", "推荐", "榜单222"],
       activeIndex: 1,
       userInfo: {},
-      favlist: [],
-      type: "fav"
+      productlist: []
     };
   },
 
   components: {
     vueTabBar
   },
-  onLoad() {
-    var that = this;
-    that.type = this.$root.$mp.query.type || 1;
-    this.clickHandle1();
-  },
+
   methods: {
+    bindViewTap(key) {
+      console.log(key);
+      const url = "../answerdetail/main?id=" + key;
+      wx.navigateTo({ url });
+    },
     goToAnswerList(id) {
       const url = "../singleanswerlist/main?id=" + id;
       wx.navigateTo({ url });
     },
-    bindViewTap(key) {
-      const url = "../favlist/main?category_id=" + key;
-      wx.navigateTo({ url });
-    },
     async clickHandle1(msg, ev) {
       var that = this;
-      if (that.type == "fav") {
-        let res = await this.$post("fav", { type: "fav" });
-        that.type = "fav";
-        that.favlist = res;
-      } else {
-        let res = await this.$post("fav", { type: "recent" });
-        that.tabs = [];
-        that.type = "recent";
-        that.favlist = res;
-      }
+      console.log("fun");
+      let res = await this.$post("question", { type: 0 });
+      console.log(res);
+      that.productlist = res;
     },
     getUserInfo() {
       // 调用登录接口
@@ -99,8 +75,10 @@ export default {
     async tabClick(key) {
       var that = this;
       that.activeIndex = key;
-      let res = await this.$post("fav", { type: key });
-      that.favlist = res;
+      console.log("fun");
+      let res = await this.$post("question", { type: key });
+      console.log(res);
+      that.productlist = res;
     },
     bindNavigateTo(url) {
       wx.navigateTo({
@@ -111,18 +89,13 @@ export default {
 
   created() {
     // 调用应用实例的方法获取全局数据t
+    this.clickHandle1();
+    this.getUserInfo();
   }
 };
 </script>
 
 <style scoped>
-.title {
-  font-size: 30rpx;
-  margin-left: 20rpx;
-  font-weight: bold;
-  line-height: 68rpx;
-  color: #fff;
-}
 .container {
   background-color: #eaeaea;
   height: 100%;
@@ -149,17 +122,21 @@ export default {
   width: 100%;
   background-color: #fff;
   margin-top: 20rpx;
-  
 }
 .wrap {
   margin-left: 40rpx;
-  padding-bottom: 20rpx;
 }
 .quest_item .header {
   font-size: 24rpx;
   color: #aeaeae;
   width: 100%;
   padding: 20rpx 0;
+}
+
+.question {
+  font-weight: bold;
+  letter-spacing: 4rpx;
+  font-size: 36rpx;
 }
 
 .quest_item .content {
