@@ -21,10 +21,10 @@
                         text: "首页"
                     },
                     {
-                        pagePath: "../orderList/main",
+                        pagePath: "../articlelist/main",
                         iconPath: "/static/image/wode.gif",
                         selectedIconPath: "/static/images/order-active.png",
-                        text: "会员"
+                        text: "攻略"
                     },
                     {
                         pagePath: "../notice/main",

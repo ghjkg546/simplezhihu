@@ -1,12 +1,12 @@
 <template>
   <div class="outter" @click = "show_comment = !show_comment">
     <div class="wrap">
-      <p class="title">动森评测</p>
+      <p class="title">{{detail.title}}</p>
       <div class="sub_title">
-        <span>任天堂swithc</span>
+        <span>{{detail.author.username}}</span>
         <span>2020-01-02</span>
       </div>
-      <div class="content" v-html="content">
+      <div class="content" v-html="detail.content">
       </div>
      </div> 
       <div class="bottom">
@@ -24,7 +24,24 @@
           <span class="iconfont icon-checkbox"></span><span>匿名发布</span>
         </div>
       </div>
-    
+    <div class="sub_title">
+            <span>评论</span>
+          </div>
+    <div class="comment_item" v-show="true" @click.stop  v-for="(item, itemIndex) in detail.comments"
+      :key="item.id">
+      <div class="write_area">
+        <div class="avatar">
+                <img src="../../../static/image/avt2.jpeg" class="avt">
+          </div>
+        <div class="comment_detail">
+          <p>{{item.content}}</p>
+          <p>xiaojie</p>
+          <p>12:30</p>
+        </div>
+        <span><span class="iconfont icon-zan"></span></span>
+      </div>
+      
+    </div>
     <div class="comment_item" v-show="true" @click.stop>
       <div class="write_area">
         <div class="avatar">
@@ -35,29 +52,13 @@
           <p>xiaojie</p>
           <p>12:30</p>
         </div>
-        <span><span class="iconfont icon-zan"></span></span>
-      </div>
-      
-    </div>
-
-    <div class="comment_item" v-show="true" @click.stop>
-      
-      <div class="write_area">
-        <div class="avatar">
-                <img src="../../../static/image/avt2.jpeg" class="avt">
-          </div>
-        <div class="comment_detail">
-          <p>拉屎的看法进拉萨</p>
-          <p>xiaojie</p>
-          <p>12:30</p>
+        <div class="icons">
+          <span class="iconfont icon-dianzan"></span>
         </div>
-        <span><span class="iconfont icon-zan"></span></span>
       </div>
       
     </div>
-
-    
-
+    <div class="separate"></div>
     
   </div>
   
@@ -77,17 +78,15 @@
                 id:15,
                 write_bool:false,
                 visible1: false,
-                fav:[],
-                list:[],
+                detail:[],
                 fav_text: '收藏',
                 show_comment:false,
-                fav_img:  require('../../../static/image/star.png')
             }
         },
         onShow() {
             var that=this;
-            that.id = this.$root.$mp.query.id || 1
-            this.loadanswerdetail();
+            that.id = this.$root.$mp.query.id || 30
+            this.loaddetail();
         },
         methods: {
             gotocomment (key) {
@@ -114,20 +113,10 @@
               }
             },
             
-            async loadanswerdetail (msg, ev) {
+            async loaddetail (msg, ev) {
                 var that = this;
-
-                let res = await this.$post('article/detail',{id:that.id})
-                that.content = res.result.data.content;
-                that.list = res.result.comment;
-                that.answer_count = res.answer_count;
-                that.fav = res.fav;
-                that.fav_text = res.is_fav==1?'已收藏':'收藏';
-                if(res.is_fav == 1){
-                  that.fav_img = require('../../../static/image/star_blue.png')
-                } else {
-                  that.fav_img = require('../../../static/image/star.png')
-                }
+                let res = await this.$post('article/switch-detail',{id:that.id})
+                that.detail = res.data;
             },
             
 
@@ -138,6 +127,7 @@
 </script>
 
 <style scoped lang="less">
+.comment_title{text-align:left}
 .btn_area{margin-left:30rpx}
 .comment{
   height:320rpx;
@@ -150,15 +140,25 @@
   }
 }
 
+
+.separate{
+  height:200rpx;
+}
 .comment_item{
+  border-top:2rpx solid #f3f3f3;
   font-size:30rpx;
-  height:320rpx;
+  min_height:240rpx;
   width:100%;
    .write_area{
     display:flex;margin-bottom:20rpx;margin-top:20rpx;
     .avatar{flex:1}
-    .comment_detail{flex:6;width:640rpx;margin-left:40rpx}
-  span{flex:1;margin-left:20rpx;font-size:40rpx;margin-top:40rpx}
+    .comment_detail{
+      flex:6;width:640rpx;margin-left:40rpx;
+      p{
+        font-size:24rpx;margin-top:4rpx
+      }
+    }
+    .icons{flex:1}
   }
 }
 
@@ -183,7 +183,7 @@
   }
 }
 .title{font-weight:bold;font-size:36rpx}
-.iconfont{font-size:24rpx;margin-right:16rpx}
+.iconfont{font-size:40rpx;margin-right:16rpx}
   .fav_mask{width:100%;
   height:100%;
   position:fixed;
@@ -210,7 +210,7 @@
   .right_area .time_area{margin-bottom: 34rpx}
   .avt{width: 90rpx;
     height:90rpx;border-radius: 45rpx}
-  .dianzan{line-height: 40rpx}
+  .dianzan{line-height: 30rpx}
   .dianzan span{display: inline-block;vertical-align: middle}
   .dianzan img{display: inline-block;vertical-align: middle;
     font-style: 0px;}

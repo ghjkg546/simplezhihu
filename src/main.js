@@ -15,9 +15,9 @@ export default {
   // 这个字段走 app.json
   config: {
     // 页面前带有 ^ 符号的，会被编译成首页，其他页面可以选填，我们会自动把 webpack entry 里面的入口页面加进去
-    pages: ['pages/musicsearch/main','pages/musicplay/main','pages/comment/main', '^pages/index/main', 'pages/article/main', 'pages/myfav/main','pages/follow/main',
+    pages: ['pages/musicsearch/main','pages/musicplay/main','pages/comment/main',  'pages/index/main', 'pages/article/main', 'pages/myfav/main','pages/follow/main',
         'pages/singleanswerlist/main' ,'pages/answerdetail/main' ,'pages/login/main' ,'pages/detail/main','pages/my/main','pages/notice/main'
-        , 'pages/myanswer/main', 'pages/test/main', 'pages/articledetail/main'],
+        , 'pages/myanswer/main', 'pages/test/main', '^pages/articledetail/main', 'pages/articlelist/main'],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
