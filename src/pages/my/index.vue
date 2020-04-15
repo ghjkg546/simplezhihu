@@ -10,7 +10,7 @@
           <p>{{answer_count}}</p>
           <p>我的创作</p>
         </li>
-        <li>
+        <li @click="goToMyFollow('fav')">
           <p>{{follow_count}}</p>
           <p>关注</p>
         </li>
@@ -54,6 +54,10 @@ export default {
     },
     goToMyFav(type) {
       let url = "../myfav/main?type=" + type;
+      wx.navigateTo({ url });
+    },
+    goToMyFollow(){
+      let url = "../follow/main";
       wx.navigateTo({ url });
     },
     goToMyAnswer() {

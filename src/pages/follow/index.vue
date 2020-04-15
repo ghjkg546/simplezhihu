@@ -6,7 +6,7 @@
         <li v-for="(value, key) in tabs"  :key="index" :class="activeIndex == key ?'active':''" @click="tabClick(key)">{{ value }}</li>
       </ul>
     </div>
-    <div class="quest_item" v-for="(item, itemIndex) in productlist" :key="item.id" @click="bindViewTap(item.id)">
+    <div class="quest_item" v-for="(item, itemIndex) in followlist" :key="item.id" @click="bindViewTap(item.id)">
       <div class="wrap">
         <div class="wrap_avatar">
           <img :src="item.avatar" alt="">
@@ -16,13 +16,10 @@
           <p class="content">{{item.brief}}</p>
         </div>
         <div class="wrap_right">
-          <button>已关注</button>
+          <button @click="cancel_follow(item.id)">已关注</button>
         </div>
-
       </div>
     </div>
-
-
   </div>
 </template>
 
@@ -31,16 +28,12 @@ export default {
   data () {
     return {
       motto: 'Hello World',
-        tabs:['问题','收藏','用户'],
-        activeIndex:3,
+        tabs:['用户','问题'],
+        activeIndex:0,
       userInfo: {},
-        productlist:[]
+        followlist:[]
     }
   },
-
-  /*components: {
-    card
-  },*/
 
   methods: {
 
@@ -53,7 +46,7 @@ export default {
           console.log('fun')
           let res = await this.$post('/user/follow-list',{name:'aa'})
           console.log(res);
-          that.productlist = res.data;
+          that.followlist = res.data;
 
       },
     getUserInfo () {
@@ -73,8 +66,29 @@ export default {
           console.log('fun')
           let res = await this.$post('answer',{type:1})
           console.log(res);
-          that.productlist = res;
+          that.followlist = res;
 
+      },
+      cancel_follow (id) {
+        var that = this;
+        wx.showModal({
+                  title: "确定要取消关注吗",
+                  cancelColor: "#000",
+                  confirmColor: "#0f0",
+                  success: function (result) {
+                    console.log(result)
+                    if (result.confirm) {
+                      let res= that.$post('/user/cancel-follow',{id:id}).then(res => {
+                that.followlist = res.data;
+                // 获取到后台重写的session数据，可以通过vuex做本地保存
+                })
+                  
+                  
+                }
+              }
+            })
+          
+          
       },
   },
 
@@ -86,15 +100,20 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
   .container{
     background-color: #eaeaea;height: 100%;
     background-size: contain;
   }
-  .tabs{width: 100%;background: #f54353;font-size: 24rpx;height: 80rpx}
-  .tabs ul li{width: 33%;
-    display: inline-block;text-align: center;line-height: 80rpx;color: #fff;
-    border-bottom: 4rpx solid #f54353}
+  .tabs{
+    width: 100%;background: #f54353;font-size: 24rpx;height: 80rpx;
+    ul{display:flex}
+
+  }
+  .tabs ul li{
+    flex:1;text-align: center;line-height: 80rpx;color: #fff;
+    border-bottom: 4rpx solid #f54353
+  }
   .tabs ul li.active{border-bottom: 4rpx solid #f9e98a}
   .quest_item{width: 100%;background-color: #fff;margin-top: 20rpx;height: 144rpx}
   .wrap{margin-left: 40rpx}

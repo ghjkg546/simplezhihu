@@ -11,13 +11,11 @@
           <span class="time">{{item.create_time}}</span>
           <span class="dianzan"><img src="../../../static/image/zan.png" class="zan" @click="voteit(item.id)"><span>{{item.vote_count}}</span></span>
         </div>
-
       </div>
-
     </div>
     <div class="clearfix"></div>
-    这里写评论：
-    <input type="text" v-model="comment_text">
+    评论
+    <input type="text" v-model="comment_text" class="comment_input">
     <button @click="leave_comment()">发送</button>
   </div>
 </template>
@@ -98,5 +96,8 @@
     content:"";
     display: block;
     clear:both;
+  }
+  .comment_input{
+    border:1px solid #d2d2d2
   }
 </style>

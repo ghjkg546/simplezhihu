@@ -70,7 +70,7 @@
           <li @click="show_fav_panel()">
             <span :class="fav_text == '收藏' ?'iconfont icon-shoucang1':'iconfont icon-favfill'"></span>
             <p>{{fav_text}}</p></li>
-          <li @click = "gotocomment()">
+          <li @click = "gotocomment(content.id)">
             <span class="iconfont icon-pinglun"></span>
             <p>评论</p></li>
         </ul>
@@ -100,6 +100,7 @@
         onShow() {
             var that=this;
             that.id = this.$root.$mp.query.id || 1
+            console.log(that.id)
             this.loadanswerdetail();
         },
         methods: {
@@ -131,7 +132,7 @@
             },
             async follow_author () {
                 var that = this;
-                let res = await this.$post('answer/follow-author',{author_id:that.content.author_id})
+                let res = await this.$post('user/follow-author',{author_id:that.content.author_id})
                 if(res.state==1){
                     that.follow_text ='已关注';
                 }

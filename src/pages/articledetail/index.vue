@@ -1,6 +1,6 @@
 <template>
-  <div class="outter" @click = "show_comment = !show_comment">
-    <div class="wrap">
+  <div class="outter">
+    <div class="wrap" @click = "show_comment = false">
       <p class="title">{{detail.title}}</p>
       <div class="sub_title">
         <span>{{detail.author.username}}</span>
@@ -10,15 +10,17 @@
       </div>
      </div> 
       <div class="bottom">
-        <div class="bottom_item"><span class="iconfont icon-zhuanfa"></span>转发</div>
-        <div class="bottom_item"><span class="iconfont icon-pinglun"></span>评论</div>
+        <div class="bottom_item">
+          <button class="iconfont icon-zhuanfa" open-type="share">转发</button>
+        </div>
+        <div class="bottom_item" @click = "show_comment = true" @click.stop><span class="iconfont icon-pinglun"></span>评论</div>
         <div class="bottom_item"><span class="iconfont icon-zan"></span>赞</div>
       </div>
 
       <div class="comment" v-show="show_comment" @click.stop>
         <div class="write_area">
-          <textarea name="" id="" cols="30" rows="10">213213</textarea>
-          <span>发布</span>
+          <textarea name="" id="" cols="30" rows="10" v-model="comment_content"></textarea>
+          <span @click="send_comment">发布</span>
         </div>
         <div class="btn_area">
           <span class="iconfont icon-checkbox"></span><span>匿名发布</span>
@@ -26,7 +28,9 @@
       </div>
     <div class="sub_title">
             <span>评论</span>
+            <p v-show = "detail.comments.length == 0">暂无评论</p>
           </div>
+
     <div class="comment_item" v-show="true" @click.stop  v-for="(item, itemIndex) in detail.comments"
       :key="item.id">
       <div class="write_area">
@@ -39,22 +43,6 @@
           <p>12:30</p>
         </div>
         <span><span class="iconfont icon-zan"></span></span>
-      </div>
-      
-    </div>
-    <div class="comment_item" v-show="true" @click.stop>
-      <div class="write_area">
-        <div class="avatar">
-                <img src="../../../static/image/avt2.jpeg" class="avt">
-          </div>
-        <div class="comment_detail">
-          <p>拉屎的看法进拉萨</p>
-          <p>xiaojie</p>
-          <p>12:30</p>
-        </div>
-        <div class="icons">
-          <span class="iconfont icon-dianzan"></span>
-        </div>
       </div>
       
     </div>
@@ -81,6 +69,7 @@
                 detail:[],
                 fav_text: '收藏',
                 show_comment:false,
+                comment_content:''
             }
         },
         onShow() {
@@ -118,6 +107,18 @@
                 let res = await this.$post('article/switch-detail',{id:that.id})
                 that.detail = res.data;
             },
+            async send_comment(){
+              var that = this;
+              let res = await this.$post('article/leave-article-comment',{id:that.id,content:that.comment_content})
+              that.comment_content = '';
+              that.show_comment = !that.show_comment;
+              wx.showToast({
+                title: '评论成功',
+                icon: 'success',
+                duration: 2000
+              })
+              that.detail.comments = res.data
+            }
             
 
         },
@@ -142,7 +143,7 @@
 
 
 .separate{
-  height:200rpx;
+  height:400rpx;
 }
 .comment_item{
   border-top:2rpx solid #f3f3f3;
@@ -167,6 +168,7 @@
     margin-top:60rpx;
     span:nth-child(1){font-size:34rpx;color:#6873a3}
     span:nth-child(2){font-size:26rpx;margin-left:30rpx}
+    p{font-size:24rpx}
   }
   .content{margin-top:60rpx}
   .outter{display:flex;justify-content: center;flex-wrap: wrap;}
@@ -180,6 +182,11 @@
     .bottom_item{
     flex:1;
     text-align:center;line-height:90rpx;font-size:24rpx;
+    button{
+      height:90rpx;line-height:90rpx;
+      font-size:24rpx;border: none;
+    }
+    button::after{ border: none; }
   }
 }
 .title{font-weight:bold;font-size:36rpx}
