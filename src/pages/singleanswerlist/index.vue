@@ -23,7 +23,7 @@
         <p class="header">{{content.title}}</p>
         <p class="sub_tile">{{question.title}}</p>
         <div class="infos">
-          <span>963人关注 9条评论</span>
+          <span>{{follow_count}}人关注 {{comment_count}}条评论</span>
           <button @click="follow_question">{{follow_anwer_text}}</button>
         </div>
         <div class="btn_area">
@@ -42,12 +42,11 @@
         </div>
         <div class="separator1">
           <span>85个回答</span>
-          <span>按质量排序</span>
         </div>
 
         <div class="clearfix"></div>
         <div class="list">
-          <div class="list-item" v-for="(item, itemIndex) in content" :key="item.id">
+          <div class="list-item" v-for="(item, itemIndex) in content" :key="item.id" @click ="gotoanswerdetail(item.id)">
             <div class="author">
               <img src="../../../static/image/avt1.jpg" alt class="avatar" />
               {{item.author_name}}
@@ -73,10 +72,12 @@ export default {
       follow_anwer_text: "关注",
       id: 0,
       write_bool: false,
-      answer_content: ""
+      answer_content: "",
+      follow_count:0,
+      comment_count:0
     };
   },
-  onLoad() {
+  onShow() {
     var that = this;
     that.id = this.$root.$mp.query.id || 1;
     this.getQuestionDetail();
@@ -98,8 +99,8 @@ export default {
         });
       }
     },
-    gotocomment(key) {
-      const url = "../comment/main?id=" + key;
+    gotoanswerdetail(id){
+      const url = "../answerdetail/main?id=" + id;
       wx.navigateTo({ url });
     },
     async follow_author() {
@@ -117,12 +118,15 @@ export default {
         question_id: that.id
       });
       that.follow_anwer_text = res.state == 1 ? "已关注" : "关注";
+      that.follow_count = res.follow_count
     },
     async getQuestionDetail(msg, ev) {
       var that = this;
       let res = await this.$post("question/detail", { id: that.id });
       that.content = res.answers;
       that.question = res.question;
+      that.follow_count = res.follow_count;
+      that.comment_count = res.comment_count;
       that.follow_anwer_text = res.follow == 1 ? "已关注" : "关注";
     },
 

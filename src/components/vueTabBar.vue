@@ -1,7 +1,8 @@
 <template>
   <div class="footer">
     <ul class="nav_ul">
-      <li v-for="(item, index) in navList" :key="index" @click="bindNavigateTo(item.pagePath)"><img :src="item.iconPath">
+      <li v-for="(item, index) in navList" :key="index" @click="selectNavItem(index,item.pagePath)">
+        <span :class="selectNavIndex===index?item.selectedIconPath:item.iconPath"></span>
         <p>{{item.text}}</p>
       </li>
     </ul>
@@ -10,79 +11,86 @@
 
 <script>
     export default {
-        props: [/*'selectNavIndex', 'needButton', 'handButton', 'btnText'*/],
+        props: ['selectNavIndex', /*'needButton', 'handButton', 'btnText'*/],
         data() {
             return {
+                selectNavIndex:0,
                 navList: [
                     {
-                        pagePath: "../index/main",
-                        iconPath: "/static/image/index.gif",
-                        selectedIconPath: "/static/images/index-active.png",
-                        text: "首页"
+                        pagePath: "../index/main?index=0",
+                        iconPath: "iconfont icon-index",
+                        selectedIconPath: "iconfont icon-icon_home",
+                        text: "首页",
+                        selected:1
                     },
                     {
-                        pagePath: "../articlelist/main",
-                        iconPath: "/static/image/wode.gif",
-                        selectedIconPath: "/static/images/order-active.png",
-                        text: "攻略"
+                        pagePath: "../articlelist/main?index=1",
+                        iconPath: "iconfont icon-gonglve1",
+                        selectedIconPath: "iconfont icon-gonglve",
+                        text: "攻略",
+                        selected:0
                     },
                     {
-                        pagePath: "../notice/main",
-                        iconPath: "/static/image/index.gif",
-                        selectedIconPath: "/static/images/icon-notice-active.png",
-                        text: "通知"
+                        pagePath: "../notice/main?index=2",
+                        iconPath: "iconfont icon-tongzhi",
+                        selectedIconPath: "iconfont icon-tongzhi1",
+                        text: "通知",
+                        selected:0
                     },
                     {
-                        pagePath: "../my/main",
-                        iconPath: "/static/image/index.gif",
-                        selectedIconPath: "/static/images/icon-notice-active.png",
-                        text: "我的"
+                        pagePath: "../my/main?index=3",
+                        iconPath: "iconfont icon-wode",
+                        selectedIconPath: "iconfont icon-wode1",
+                        text: "我的",
+                        selected:0
                     },
                 ],
+                index:0,
             }
         },
         created() {
         },
         methods: {
-            /**
-             * 点击导航栏
-             * @param index
-             */
-            /*selectNavItem(index, pagePath) {
-                console.log(this.selectNavIndex)
-
+            selectNavItem(index, pagePath) {
                 if (index === this.selectNavIndex) {
                     return false;
                 }
-
-
+                console.log(index);
                 if (index == 0 && this.selectNavIndex == -1) {
                     this.$emit("fetch-index");
                 }
                 this.bindViewTap(pagePath);
-            },*/
-
-            /**
-             * 路由跳转
-             */
+            },
             bindNavigateTo(url) {
                 wx.navigateTo({
                     url
-                })
+                });
             },
-
-            /**
-             * tabBar路由跳转
-             */
             bindViewTap(url) {
-                // 回到顶部
-                if (url === '../index/main') {
-                    store.commit('setGroupsID', '');
-                }
-                wx.switchTab({
-                    url,
-                })
-            },
+                let page = getCurrentPages();
+                console.log(page);
+
+                wx.reLaunch({
+                    url
+                });
+            }
+                // let new_list = [];
+                // let that = this;
+                // this.navList.forEach(function(v,k){
+                //     v.selected = index == k?1:0
+                //     new_list.push(v)
+                // })
+                // that.navList = new_list;
+                // console.log(new_list)
+                /*if (that.index === index) {
+                    return false;
+                }*/
+                // wx.navigateTo({
+                //     url:pagePath
+                // });
+                //this.bindViewTap(pagePath);
+            
+
         }
     }
 </script>

@@ -3,9 +3,11 @@
     <div class="wrap" @click = "show_comment = false">
       <p class="title">{{detail.title}}</p>
       <div class="sub_title">
-        <span>{{detail.author.username}}</span>
-        <span>2020-01-02</span>
+        <span>作者：{{username}}</span>
+        <br />
+        <span>发布时间：{{detail.create_time}}</span>
       </div>
+      <div><img :src="detail.cover_img" class="cover_img"></div>
       <div class="content" v-html="detail.content">
       </div>
      </div> 
@@ -67,6 +69,7 @@
                 write_bool:false,
                 visible1: false,
                 detail:[],
+                username:'',
                 fav_text: '收藏',
                 show_comment:false,
                 comment_content:''
@@ -106,6 +109,7 @@
                 var that = this;
                 let res = await this.$post('article/switch-detail',{id:that.id})
                 that.detail = res.data;
+                that.username = that.detail.author.username
             },
             async send_comment(){
               var that = this;
@@ -170,6 +174,7 @@
     span:nth-child(2){font-size:26rpx;margin-left:30rpx}
     p{font-size:24rpx}
   }
+  .cover_img{width:650rpx;}
   .content{margin-top:60rpx}
   .outter{display:flex;justify-content: center;flex-wrap: wrap;}
   .wrap{width:92%}

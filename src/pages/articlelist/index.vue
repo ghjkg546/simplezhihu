@@ -8,11 +8,11 @@
         <div class="comment">5阅读 0评论 020-09 13:56</div>
       </div>
         <div class="right_item">
-          <img src="../../../static/image/cover1.png" alt="">
+          <img :src="item.cover_img" alt="">
         </div>
       </div>
     </div>
-    <vue-tab-bar></vue-tab-bar>
+    <vue-tab-bar :selectNavIndex="1"></vue-tab-bar>
   </div>
 </template>
 

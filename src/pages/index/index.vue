@@ -22,7 +22,7 @@
         <p class="main">{{item.up_count}}赞同-3评论-3关注问题</p>
       </div>
     </div>
-    <vue-tab-bar></vue-tab-bar>
+    <vue-tab-bar :selectNavIndex="0"></vue-tab-bar>
   </div>
 </template>
 
