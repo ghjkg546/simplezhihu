@@ -29,22 +29,22 @@
 
     <div class="quest_item">
       <div class="wrap">
-        <p class="header">{{content.title}}</p>
+        <p class="header">{{title}}</p>
         <div class="content">
           <div class="bg">
             <span class="write_answer"  @click="write_bool=true">
               写回答</span>
           </div>
           <div class="fr">
-            <span class="fr all_an">查看全部{{answer_count}}个回答 </span></div>
+            <span class="fr all_an" @click = "gotoAllAnswer(question_id)">查看全部{{answer_count}}个回答 </span></div>
           </div>
         <p class="author">
           <img src="../../../static/image/avt1.jpg" alt="" class="avatar">
           <ul class="info">
-            <li>{{content.author.brief||''}}</li>
+            <li>{{breif}}</li>
             <li class="short">{{content.author.username}}</li>
           </ul>
-            <button class="fr" @click="follow_author(content.author_id)">+ {{follow_text}}</button>
+            <button class="fr" @click="follow_author(content.author_id)"> {{follow_text}}</button>
         </p>
         <div class="clearfix"></div>
         <p class="para">
@@ -94,7 +94,10 @@
                 visible1: false,
                 fav:[],
                 thank_text : '感谢',
-                fav_text: '收藏'
+                fav_text: '收藏',
+                title:'',
+                brief:'',
+                question_id:0
             }
         },
         onShow() {
@@ -109,6 +112,10 @@
             },
             gotocomment (key) {
                 const url = '../comment/main?id='+key
+                wx.navigateTo({ url })
+            },
+            gotoAllAnswer (id) {
+                const url = '../singleanswerlist/main?id='+id
                 wx.navigateTo({ url })
             },
             async show_fav_panel(){
@@ -133,9 +140,8 @@
             async follow_author () {
                 var that = this;
                 let res = await this.$post('user/follow-author',{author_id:that.content.author_id})
-                if(res.state==1){
-                    that.follow_text ='已关注';
-                }
+                that.follow_text =res.follow_text;
+                
             },
             async add_to_fav (cate_id) {
                 var that = this;
@@ -173,7 +179,11 @@
                 that.content = res.content;
                 that.answer_count = res.answer_count;
                 that.fav = res.fav;
+                that.title= res.content.title;
                 that.fav_text = res.is_fav==1?'已收藏':'收藏';
+                that.follow_text = res.follow_text;
+                that.brief = res.content.author.brief;
+                that.question_id = res.content.question_id
                 if(res.is_fav == 1){
                   that.fav_img = require('../../../static/image/star_blue.png')
                 } else {

@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    
     <div class="tabs">
       <ul>
         <li
@@ -10,16 +11,19 @@
         >{{ value }}</li>
       </ul>
     </div>
+    <div class="no_content" v-show="questionlist.length == 0">
+      <p>这里没有内容哦</p>
+    </div>
     <div
       class="quest_item"
-      v-for="(item, itemIndex) in productlist"
+      v-for="(item, itemIndex) in questionlist"
       :key="item.id"
-      @click="bindViewTap(item.id)"
+      @click="bindViewTap(item.answer_id)"
     >
       <div class="wrap">
         <p class="question" @click="goToAnswerList(item.id)">{{item.title}}</p>
         <p class="content">{{item.content}}</p>
-        <p class="main">{{item.up_count}}赞同-3评论-3关注问题</p>
+        <p class="main">{{item.like_count}}赞同-{{item.comment_count}}评论-{{item.follow_count}}关注问题</p>
       </div>
     </div>
     <vue-tab-bar :selectNavIndex="0"></vue-tab-bar>
@@ -32,10 +36,10 @@ export default {
   data() {
     return {
       motto: "Hello World",
-      tabs: ["关注", "推荐", "榜单"],
-      activeIndex: 1,
+      tabs: ["关注", "全部", "榜单"],
+      activeIndex: 0,
       userInfo: {},
-      productlist: []
+      questionlist: []
     };
   },
 
@@ -58,7 +62,7 @@ export default {
       console.log("fun");
       let res = await this.$post("question", { type: 0 });
       console.log(res);
-      that.productlist = res;
+      that.questionlist = res;
     },
     getUserInfo() {
       // 调用登录接口
@@ -78,7 +82,7 @@ export default {
       console.log("fun");
       let res = await this.$post("question", { type: key });
       console.log(res);
-      that.productlist = res;
+      that.questionlist = res;
     },
     bindNavigateTo(url) {
       wx.navigateTo({
@@ -95,7 +99,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .container {
   background-color: #eaeaea;
   height: 100%;
@@ -171,4 +175,7 @@ export default {
   height: 40rpx;
   margin-top: 20rpx;
 }
+.no_content{
+  p{line-height:600rpx}
+} 
 </style>
