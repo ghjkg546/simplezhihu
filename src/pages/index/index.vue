@@ -48,19 +48,26 @@ export default {
   },
 
   methods: {
-    bindViewTap(key) {
-      console.log(key);
-      const url = "../answerdetail/main?id=" + key;
+    bindViewTap(answer_id) {
+      if(answer_id == 0){
+        wx.showToast({
+          title:"暂无回答哦",
+          icon:"none",
+          duration: 2000,//提示的延迟时间，单位毫秒，默认：1500 
+          mask: false,//是否显示透明蒙层，防止触摸穿透，默认：false 
+        })
+        return false;
+      }
+      const url = "../answerdetail/main?id=" + answer_id;
       wx.navigateTo({ url });
     },
     goToAnswerList(id) {
       const url = "../singleanswerlist/main?id=" + id;
       wx.navigateTo({ url });
     },
-    async clickHandle1(msg, ev) {
+    async getQuestionList(type = 0) {
       var that = this;
-      console.log("fun");
-      let res = await this.$post("question", { type: 0 });
+      let res = await this.$post("question", { type: that.activeIndex });
       console.log(res);
       that.questionlist = res;
     },
@@ -79,10 +86,7 @@ export default {
     async tabClick(key) {
       var that = this;
       that.activeIndex = key;
-      console.log("fun");
-      let res = await this.$post("question", { type: key });
-      console.log(res);
-      that.questionlist = res;
+      this.getQuestionList(key)
     },
     bindNavigateTo(url) {
       wx.navigateTo({
@@ -90,10 +94,13 @@ export default {
       });
     }
   },
+  onShow(){
+    this.getQuestionList();
+  },
 
   created() {
     // 调用应用实例的方法获取全局数据t
-    this.clickHandle1();
+    //this.getQuestionList();
     this.getUserInfo();
   }
 };
