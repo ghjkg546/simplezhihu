@@ -55,17 +55,20 @@
             <span class="fr all_an" @click = "gotoAllAnswer(question_id)">查看全部{{answer_count}}个回答 </span></div>
           </div>
           <div class="author">
-              <img src="../../../static/image/avt1.jpg" alt="" class="avatar">
+              <div class="avatar_area">
+                <img src="../../../static/image/avt1.jpg" alt="" class="avatar">
+              </div>
+              
               <ul class="info">
-                <li>{{breif}}</li>
-                <li class="short">{{content.author.username}}</li>
+                <li class="short">{{username}}</li>
+                <li class="brief">{{brief}}</li>
               </ul>
               <div class="blank_area"></div>
                 <button class="follow_btn" @click="follow_author(content.author_id)"> {{follow_text}}</button>
           </div>
         
         <div class="para">
-          <p>{{content.content}}</p>
+          <p v-html="content.content"></p>
         </div>
       </div>
     </div>
@@ -85,7 +88,7 @@
             <span :class="fav_text == '收藏' ?'iconfont icon-shoucang':'iconfont icon-favfill'"></span>
             <p>{{fav_text}}</p></li>
           <li @click = "gotocomment(content.id)">
-            <span class="iconfont icon-pinglun"></span>
+            <span class="iconfont icon-pinglun1"></span>
             <p>评论</p></li>
         </ul>
       </div>
@@ -113,7 +116,8 @@
                 brief:'',
                 question_id:0,
                 create_new_fav:false,
-                category_name:''
+                category_name:'',
+                username:''
             }
         },
         onShow() {
@@ -204,13 +208,14 @@
                 var that = this;
                 let res = await this.$post('answer/detail',{id:that.id})
                 that.content = res.content;
+                that.username = res.content.author.username;
+                that.brief = res.content.author.brief;
                 that.answer_count = res.answer_count;
                 that.fav = res.fav;
                 that.title= res.content.title;
                 that.fav_text = res.is_fav==1?'已收藏':'收藏';
                 that.follow_text = res.follow_text;
                 that.thank_text = res.thank_text;
-                that.brief = res.content.author.brief;
                 that.question_id = res.content.question_id
                 if(res.is_fav == 1){
                   that.fav_img = require('../../../static/image/star_blue.png')
@@ -348,13 +353,18 @@
     width: 90rpx;
     height: 90rpx;
   }
+  .brief{font-size:30rpx}
 
   .author{
     display:flex;
     height: 140rpx;border-bottom:2rpx solid #eaeaea;margin-top: 20rpx;
-    .avatar{flex:1}
+    .avatar_area{flex:1}
     .blank_area{flex:2}
-     ul.info{flex:1;width: 400rpx;margin-left: 16rpx}
+     ul.info{
+      flex:2;width: 400rpx;margin-left: 16rpx;
+
+    }
+
      button{flex:1;width: 160rpx;height: 70rpx;font-size: 24rpx;text-align: center;
      background-color: #0084ff;color: #fff;line-height: 70rpx;margin-right: 28rpx}
   }
