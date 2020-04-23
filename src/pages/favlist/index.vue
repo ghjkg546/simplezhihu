@@ -2,14 +2,13 @@
   <div class="container">
     <div
       class="quest_item"
-      v-for="(item, itemIndex) in productlist"
+      v-for="(item, itemIndex) in answerlist"
       :key="item.id"
       @click="bindViewTap(item.id)"
     >
       <div class="wrap">
-        <p class="header">{{item.voter}}赞同了该答案a</p>
-        <p class="content">{{item.title}}</p>
-        <p class="main">{{item.up_count}}赞同-3评论-3关注问题</p>
+        <p class="header">{{item.question_title}}</p>
+        <p class="content" v-text="item.content"></p>
       </div>
     </div>
   </div>
@@ -20,7 +19,9 @@ export default {
   data() {
     return {
       userInfo: {},
-      category_id:0
+      category_id:0,
+      answerlist:[],
+      activeIndex:0
     };
   },
   onLoad() {
@@ -37,13 +38,13 @@ export default {
     async getFavList(msg, ev) {
       var that = this;
       let res = await this.$post("fav/list", { category_id: that.category_id });
-      that.productlist = res;
+      that.answerlist = res;
     },
     async tabClick(key) {
       var that = this;
       that.activeIndex = key;
       let res = await this.$post("fav/list", { category_name: key });
-      that.productlist = res;
+      that.answerlist = res;
     },
     bindNavigateTo(url) {
       wx.navigateTo({
@@ -89,6 +90,7 @@ export default {
   margin-left: 40rpx;
 }
 .quest_item .header {
+  font-weight: bold;
   font-size: 24rpx;
   color: #aeaeae;
   width: 100%;

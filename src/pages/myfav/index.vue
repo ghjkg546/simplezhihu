@@ -46,8 +46,8 @@ export default {
   data() {
     return {
       motto: "Hello World",
-      tabs: ["我的收藏", "热门收藏"],
-      activeIndex: 1,
+      tabs: ["我的收藏"],
+      activeIndex: 0,
       userInfo: {},
       favlist: [],
       type: "fav"

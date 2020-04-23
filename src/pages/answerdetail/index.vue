@@ -5,9 +5,25 @@
     </div>
     <div class="fav_panel" v-show="show_fav">
       <ul>
-        <li @click="add_to_fav(item.id)" v-for="(item, key) in fav" :key="index"><p>{{item.category_name}}</p>
-          <p class="fav_bottom">{{item.answer_count}}个内容</p>
-        </li>
+        <div v-show="!create_new_fav">
+          <li @click="add_to_fav(item.id)" v-for="(item, key) in fav" :key="index"><p>{{item.category_name}}</p>
+            <p class="fav_bottom">{{item.answer_count}}个内容</p>
+          </li>
+          <li class="fav_btns"> 
+            <i-button type="primary" @click="create_new_fav=true" class="small_btn" size="small">新建</i-button>
+            <i-button @click="show_fav=false" class="small_btn" size="small">返回</i-button>
+          </li>
+        </div>
+        <div v-show="create_new_fav">
+          <li class="no_border">
+            <p class="fav_title">创建新收藏夹</p>
+            <input type="text" v-model="category_name" class="new_fav_name" />
+          </li>
+          <li class="fav_btns"> 
+            <i-button type="primary" @click="create_new_fav_folder" class="small_btn" size="small">确定</i-button>
+            <i-button @click="create_new_fav=false" class="small_btn" size="small">返回</i-button>
+          </li>
+        </div>
       </ul>
     </div>  
     <div class="write_mask" v-show="write_bool">
@@ -38,37 +54,35 @@
           <div class="fr">
             <span class="fr all_an" @click = "gotoAllAnswer(question_id)">查看全部{{answer_count}}个回答 </span></div>
           </div>
-        <p class="author">
-          <img src="../../../static/image/avt1.jpg" alt="" class="avatar">
-          <ul class="info">
-            <li>{{breif}}</li>
-            <li class="short">{{content.author.username}}</li>
-          </ul>
-            <button class="fr" @click="follow_author(content.author_id)"> {{follow_text}}</button>
-        </p>
-        <div class="clearfix"></div>
-        <p class="para">
-          {{content.content}}
-        </p>
+          <div class="author">
+              <img src="../../../static/image/avt1.jpg" alt="" class="avatar">
+              <ul class="info">
+                <li>{{breif}}</li>
+                <li class="short">{{content.author.username}}</li>
+              </ul>
+              <div class="blank_area"></div>
+                <button class="follow_btn" @click="follow_author(content.author_id)"> {{follow_text}}</button>
+          </div>
+        
+        <div class="para">
+          <p>{{content.content}}</p>
+        </div>
       </div>
     </div>
     <div class="footer">
       <div class="vote_btn">
-        <span :class="content.has_vote == 1 ?'active':''">
-          <img src="../../../static/image/up.png" alt="" class="vote" @click="voteit()">赞同{{content.up_count}}
-        </span>
-        <span class="spe">
-          <img src="../../../static/image/down.png" alt="" class="vote">
-        </span>
+        <button :class="content.liked == 1 ?'active':''"  @click="voteit()">
+          <span class="iconfont .icon-arrow-up"></span>
+          赞同{{content.up_count}}
+        </button>
       </div>
-
       <div class="right_area">
         <ul>
           <li @click ="updateThankState()">
-            <span :class="thank_text == '感谢' ?'iconfont icon-shoucang':'iconfont icon-like'"></span>
+            <span :class="thank_text == '感谢' ?'iconfont icon-like1':'iconfont icon-like2'"></span>
             <p>{{thank_text}}</p></li>
           <li @click="show_fav_panel()">
-            <span :class="fav_text == '收藏' ?'iconfont icon-shoucang1':'iconfont icon-favfill'"></span>
+            <span :class="fav_text == '收藏' ?'iconfont icon-shoucang':'iconfont icon-favfill'"></span>
             <p>{{fav_text}}</p></li>
           <li @click = "gotocomment(content.id)">
             <span class="iconfont icon-pinglun"></span>
@@ -97,18 +111,20 @@
                 fav_text: '收藏',
                 title:'',
                 brief:'',
-                question_id:0
+                question_id:0,
+                create_new_fav:false,
+                category_name:''
             }
         },
         onShow() {
             var that=this;
             that.id = this.$root.$mp.query.id || 1
-            console.log(that.id)
             this.loadanswerdetail();
         },
         methods: {
-            updateThankState(){
-              this.thank_text = this.thank_text== '感谢'?'已感谢':'感谢'
+            async updateThankState(){
+              let res = await this.$post('answer/thank-answer',{answer_id:this.id})
+              this.thank_text = res.thank_text;
             },
             gotocomment (key) {
                 const url = '../comment/main?id='+key
@@ -120,6 +136,7 @@
             },
             async show_fav_panel(){
               let that = this;
+              that.create_new_fav = false;
               if(that.fav_text=='已收藏'){
                 let res = await this.$post('fav/remove',{answer_id:that.id})
                 if(res.state==1){
@@ -141,7 +158,18 @@
                 var that = this;
                 let res = await this.$post('user/follow-author',{author_id:that.content.author_id})
                 that.follow_text =res.follow_text;
-                
+            },
+            async create_new_fav_folder () {
+                var that = this;
+                let res = await this.$post('fav/add-new-folder',{category_name:this.category_name})
+                wx.showToast({
+                      title:"添加成功",
+                      duration: 2000,//提示的延迟时间，单位毫秒，默认：1500 
+                      mask: false,//是否显示透明蒙层，防止触摸穿透，默认：false 
+                })
+                that.show_fav = false;
+                that.create_new_fav = false;
+                that.fav = res.fav;
             },
             async add_to_fav (cate_id) {
                 var that = this;
@@ -174,7 +202,6 @@
             },
             async loadanswerdetail (msg, ev) {
                 var that = this;
-
                 let res = await this.$post('answer/detail',{id:that.id})
                 that.content = res.content;
                 that.answer_count = res.answer_count;
@@ -182,6 +209,7 @@
                 that.title= res.content.title;
                 that.fav_text = res.is_fav==1?'已收藏':'收藏';
                 that.follow_text = res.follow_text;
+                that.thank_text = res.thank_text;
                 that.brief = res.content.author.brief;
                 that.question_id = res.content.question_id
                 if(res.is_fav == 1){
@@ -192,13 +220,9 @@
             },
             async voteit (msg, ev) {
                 var that = this;
-                let res = await this.$post('answer/vote',{id:that.id})
-                if(res['state'] ==1){
-                    that.content.has_vote = 1;
-                    var a =parseInt(that.content.up_count);
-                    a+=1;
-                    that.content.up_count = a;
-                }
+                let res = await this.$post('answer/like',{id:that.id})
+                that.content.liked = res.data.liked
+                that.content.up_count = res.data.up_count
             },
 
         },
@@ -208,7 +232,14 @@
 </script>
 
 <style scoped lang="less">
+  .no_border{border-bottom:0 !important}
+  .fav_btns{
+    display:flex;
+    .small_btn{flex:1}
+  }
+  .new_fav_name {border-radius: 5px;border:1px solid #f0f2f7;width:80%;margin:0 auto;min-height:60rpx;line-height:60rpx}
   .iconfont{font-size:20px}
+  .fav_title{text-align:center;margin-bottom:10rpx}
   .fav_mask{width:100%;
   height:100%;
   position:fixed;
@@ -246,7 +277,7 @@
       margin-top: 19rpx;
       width: 160rpx;height: 60rpx;background-color: #f7f7f7;font-size: 22rpx}
       img{width: 30rpx;height: 30rpx;margin-top: 15rpx;float: left}
-      line-height: 40rpx
+      line-height: 60rpx
 
   }
   .save_btn{float:left}
@@ -263,11 +294,11 @@
   .vote{width: 24rpx;height:24rpx}
   .vote1{width: 48rpx;height:48rpx}
   .vote_btn{font-size: 30rpx;margin-top: 20rpx}
-  .vote_btn span{width: 200rpx;text-align: center;
+  .vote_btn button{width: 260rpx;text-align: center;
     height: 60rpx;background-color:#f7f7f7 ;display: inline-block;margin-left: 20rpx  ;
     line-height: 60rpx}
-  .vote_btn span.spe{width: 100rpx;margin-left: 10rpx}
-.vote_btn .active{color: blue}
+  .vote_btn button.spe{width: 100rpx;margin-left: 10rpx;font-size:26rpx}
+.vote_btn .active{color: #fff;background-color:#0084ff}
 
 
   .footer .right_area li{float: left;width: 120rpx;text-align: center;font-size: 20rpx;height: 64rpx;margin-top: 15rpx}
@@ -285,7 +316,7 @@
     border-bottom: 4rpx solid #f54353}
   .tabs ul li.active{border-bottom: 4rpx solid #f9e98a}
   .quest_item{width: 100%;background-color: #fff;margin-top: 20rpx}
-  .wrap{margin-left: 40rpx}
+  .wrap{padding:0 40rpx;width:100%;box-sizing:border-box;}
   .quest_item .header {
     font-size: 24rpx;
     color: #aeaeae;
@@ -313,15 +344,18 @@
 
   .quest_item .avatar {
     border-radius: 45rpx;
-    float: left;
+    
     width: 90rpx;
     height: 90rpx;
   }
 
   .author{
+    display:flex;
     height: 140rpx;border-bottom:2rpx solid #eaeaea;margin-top: 20rpx;
-     ul.info{float: left;width: 400rpx;margin-left: 16rpx}
-     button{width: 160rpx;height: 70rpx;font-size: 24rpx;text-align: center;
+    .avatar{flex:1}
+    .blank_area{flex:2}
+     ul.info{flex:1;width: 400rpx;margin-left: 16rpx}
+     button{flex:1;width: 160rpx;height: 70rpx;font-size: 24rpx;text-align: center;
      background-color: #0084ff;color: #fff;line-height: 70rpx;margin-right: 28rpx}
   }
 
@@ -339,8 +373,8 @@
 
   .quest_item .main{margin: 40rpx 0;color: #aeaeae;;font-size: 30rpx}
 
-  .quest_item .para{line-height: 52rpx;font-size:34rpx;margin-top: 40rpx;margin-bottom: 100rpx }
-
+  .quest_item .para{line-height: 52rpx;font-size:34rpx;margin-top: 40rpx;margin-bottom: 100rpx;box-sizing:border-box; }
+ 
   .clearfix:after {
     content:"";
     display: block;
@@ -350,7 +384,7 @@
   .fullscreen{
     width:100%
   }
-
+ 
 
 
 </style>
