@@ -4,14 +4,13 @@
     <div class="item" v-for="(item, key) in list" :key="index">
       <div class="right_area">
         <p class="name">{{item.title}}</p>
-        <p class="content">{{item.content}}</p>
+        <p class="content" v-html="item.content"></p>
         <div class="bottom">
           <div class="bottom_left">{{item.create_time}}</div>
           <div class="bottom_right" @click="jumpToUrl(item.id)">详细</div>
         </div>
       </div>
     </div>
-    <div class="clearfix"></div>
   </div>
 </template>
 
@@ -93,9 +92,9 @@ export default {
   margin-top: 34rpx;
 }
 .right_area {
-  width: 100%;
-  float: left;
+  width: 90%;
   padding-left: 40rpx;
+  padding-right: 40rpx
 }
 .right_area p.name {
   font-size: 32rpx;

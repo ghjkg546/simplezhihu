@@ -4,7 +4,7 @@
       <img src="../../../static/image/close.gif" alt @click="write_bool=false" />
       <div class="title">
         <p>{{question.title}}</p>
-        <p>草稿已保存</p>
+        
       </div>
       <div class="clearfix"></div>
       <div class="content">
@@ -29,7 +29,7 @@
         <div class="btn_area">
           <ul class="flex">
             <li class="flex-item">
-              <span @click="write_bool=true">
+              <span @click="invite_show=true">
                 <img src="../../../static/image/invite.gif" alt />邀请回答
               </span>
             </li>
@@ -58,102 +58,146 @@
         </div>
       </div>
     </div>
-    <div class="footer"></div>
+    <div class="invite_member card" v-show="invite_show">
+      <ul class="wrap">
+        <li  v-for="(item, itemIndex) in invite_member" :key="item.id">
+          <div class="left"><img src="../../../static/image/avt1.jpg" class="avatar_invite" /></div>
+          <div class="mid">{{item.username}}</div>
+          <i-button :type="item.invited == 0 ?'primary':''" @click="invite_answer(item)" class="small_btn" size="small">{{item.invite_text}}</i-button>
+        </li>
+        
+        <li><i-button @click="invite_show=false" class="small_btn" size="small">关闭</i-button></li>
+      </ul>
+      
+    </div>
   </div>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      content: [],
-      question: [],
-      follow_text: "关注",
-      follow_anwer_text: "关注",
-      id: 0,
-      write_bool: false,
-      answer_content: "",
-      follow_count:0,
-      comment_count:0
+    export default {
+        data() {
+            return {
+                content: [],
+                question: [],
+                follow_text: "关注",
+                follow_anwer_text: "关注",
+                id: 0,
+                write_bool: false,
+                answer_content: "",
+                follow_count: 0,
+                comment_count: 0,
+                invite_member: [],
+                invite_show:false
+            };
+        },
+        onShow() {
+            var that = this;
+            that.id = this.$root.$mp.query.id || 1;
+            this.getQuestionDetail();
+        },
+        methods: {
+            async save_answer() {
+                var that = this;
+                let res = await this.$post("answer/write-answer", {
+                    author_id: that.content.author_id,
+                    answer_content: that.answer_content,
+                    answer_id: that.id
+                });
+                if (res.state == 1) {
+                    wx.showToast({
+                        title: "发布成功",
+                        duration: 2000, //提示的延迟时间，单位毫秒，默认：1500
+
+                        mask: false //是否显示透明蒙层，防止触摸穿透，默认：false
+                    });
+                }
+            },
+            gotoanswerdetail(id){
+                const url = "../answerdetail/main?id=" + id;
+                wx.navigateTo({url});
+            },
+            async follow_author() {
+                var that = this;
+                let res = await this.$post("answer/follow-author", {
+                    author_id: that.content.author_id
+                });
+                if (res.state == 1) {
+                    that.follow_text = "已关注";
+                }
+            },
+
+            async invite_answer(item) {
+                if(item.invited){
+                    return false;
+                }
+                var that = this;
+                let res = await this.$post("notice/invite-answer", {
+                    content_id: that.id,
+                    user_id: item.id,
+                });
+                if (res.code == 1) {
+                    wx.showToast({
+                        title: "邀请成功",
+                        icon: "succes",
+                        duration: 1000,
+                        mask: true
+                    });
+                    that.invite_show = false;
+                    that.invite_member = res.data;
+                }
+            },
+
+            async follow_question() {
+                var that = this;
+                let res = await this.$post("question/follow-question", {
+                    question_id: that.id
+                });
+                that.follow_anwer_text = res.state == 1 ? "已关注" : "关注";
+                that.follow_count = res.follow_count
+            },
+
+            async getQuestionDetail(msg, ev) {
+                var that = this;
+                let res = await this.$post("question/detail", {id: that.id});
+                that.content = res.answers;
+                that.question = res.question;
+                that.follow_count = res.follow_count;
+                that.comment_count = res.comment_count;
+                that.invite_member = res.invite_member;
+                that.follow_anwer_text = res.follow == 1 ? "已关注" : "关注";
+            },
+
+            async sendanswer(msg, ev) {
+                var that = this;
+                that.id = 1;
+                let res = await this.$post("question/write-answer", {
+                    question_id: that.question.id,
+                    answer_content: that.answer_content
+                });
+                if (res.state == 1) {
+                    wx.showToast({
+                        title: "成功",
+                        icon: "succes",
+                        duration: 1000,
+                        mask: true
+                    });
+                    that.write_bool = false;
+                    that.content = res.answers;
+                }
+            }
+        },
+        created() {
+        }
     };
-  },
-  onShow() {
-    var that = this;
-    that.id = this.$root.$mp.query.id || 1;
-    this.getQuestionDetail();
-  },
-  methods: {
-    async save_answer() {
-      var that = this;
-      let res = await this.$post("answer/write-answer", {
-        author_id: that.content.author_id,
-        answer_content: that.answer_content,
-        answer_id: that.id
-      });
-      if (res.state == 1) {
-        wx.showToast({
-          title: "发布成功",
-          duration: 2000, //提示的延迟时间，单位毫秒，默认：1500
-
-          mask: false //是否显示透明蒙层，防止触摸穿透，默认：false
-        });
-      }
-    },
-    gotoanswerdetail(id){
-      const url = "../answerdetail/main?id=" + id;
-      wx.navigateTo({ url });
-    },
-    async follow_author() {
-      var that = this;
-      let res = await this.$post("answer/follow-author", {
-        author_id: that.content.author_id
-      });
-      if (res.state == 1) {
-        that.follow_text = "已关注";
-      }
-    },
-    async follow_question() {
-      var that = this;
-      let res = await this.$post("question/follow-question", {
-        question_id: that.id
-      });
-      that.follow_anwer_text = res.state == 1 ? "已关注" : "关注";
-      that.follow_count = res.follow_count
-    },
-    async getQuestionDetail(msg, ev) {
-      var that = this;
-      let res = await this.$post("question/detail", { id: that.id });
-      that.content = res.answers;
-      that.question = res.question;
-      that.follow_count = res.follow_count;
-      that.comment_count = res.comment_count;
-      that.follow_anwer_text = res.follow == 1 ? "已关注" : "关注";
-    },
-
-    async sendanswer(msg, ev) {
-      var that = this;
-      that.id = 1;
-      let res = await this.$post("question/write-answer", {
-        question_id: that.question.id,
-        answer_content: that.answer_content
-      });
-      if (res.state == 1) {
-        wx.showToast({
-          title: "成功",
-          icon: "succes",
-          duration: 1000,
-          mask: true
-        });
-        that.write_bool = false;
-        that.content = res.answers;
-      }
-    }
-  },
-  created() {}
-};
 </script>
 
 <style scoped lang="less">
+.invite_list{
+  height: 110rpx;
+    background-color: #fff;
+    position: fixed;
+    bottom: 0;
+}
 .flex {
   display: flex;
   flex-direction: row;
@@ -300,63 +344,34 @@ export default {
   margin-right: 30rpx;
   margin-top: 19rpx;
 }
-.footer {
+.invite_member {
+  .wrap{
+    margin-left:30rpx;
+    font-size:30rpx;
+
+  }
+  .avatar_invite{width:60rpx;height:60rpx;line-height:150rpx;margin-top:30rpx}
+  li{
+    height:100rpx;line-height:100rpx;border-bottom:1px solid #e2e2e2; display: flex;
+    .left{flex:2}
+.mid{flex:3}
+.small_btn{flex:1;height:40rpx;min-width: 200rpx}
+  }
   width: 100%;
-  height: 110rpx;
+  height: auto;
   background-color: #fff;
   position: fixed;
   bottom: 0;
 }
-.footer .right_area li {
-  float: left;
-}
-.footer .vote_btn {
-  float: left;
-  width: 360rpx;
-}
-.footer .right_area {
-  margin-left: 5rpx;
-  float: left;
-  width: 360rpx;
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 92%;
+    border-radius: 5px;
 }
 
-.vote {
-  width: 24rpx;
-  height: 24rpx;
-}
-.vote1 {
-  width: 48rpx;
-  height: 48rpx;
-}
-.vote_btn {
-  font-size: 30rpx;
-  margin-top: 20rpx;
-}
-.vote_btn span {
-  width: 200rpx;
-  text-align: center;
-  height: 60rpx;
-  background-color: #f7f7f7;
-  display: inline-block;
-  margin-left: 20rpx;
-  line-height: 60rpx;
-}
-.vote_btn span.spe {
-  width: 100rpx;
-  margin-left: 10rpx;
-}
-.vote_btn .active {
-  color: blue;
-}
 
-.footer .right_area li {
-  float: left;
-  width: 120rpx;
-  text-align: center;
-  font-size: 20rpx;
-  height: 64rpx;
-  margin-top: 15rpx;
-}
 
 * {
   margin: 0;

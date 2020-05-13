@@ -14,16 +14,22 @@
       </div>
 
     </div>
-    <div class="clearfix"></div>
+    
+    
+    <vue-tab-bar :selectNavIndex="3"></vue-tab-bar>
   </div>
 </template>
 
 <script>
+    import vueTabBar from "../../components/vueTabBar";
     export default {
         data () {
             return {
                 list:[],
             }
+        },
+        components: {
+          vueTabBar
         },
         onLoad() {
             var that=this;
