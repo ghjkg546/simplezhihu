@@ -107,7 +107,7 @@
             
             async loaddetail (msg, ev) {
                 var that = this;
-                let res = await this.$post('article/switch-detail',{id:that.id})
+                let res = await this.$post('article/detail',{id:that.id})
                 that.detail = res.data;
                 that.username = that.detail.author.username
             },

@@ -39,7 +39,7 @@
         data () {
             return {
                 motto: 'Hello World',
-                tabs: ['用户', '问题'],
+                tabs: ['关注用户'],
                 activeIndex: 0,
                 userInfo: {},
                 followlist: [],

@@ -169,14 +169,13 @@
 
             async sendanswer(msg, ev) {
                 var that = this;
-                that.id = 1;
                 let res = await this.$post("question/write-answer", {
                     question_id: that.question.id,
                     answer_content: that.answer_content
                 });
-                if (res.state == 1) {
+                if (res.code == 1) {
                     wx.showToast({
-                        title: "成功",
+                        title: "发布成功",
                         icon: "succes",
                         duration: 1000,
                         mask: true

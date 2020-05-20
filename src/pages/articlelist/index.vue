@@ -41,7 +41,7 @@ export default {
     },
     async getAriticleList(msg, ev) {
       var that = this;
-      let res = await this.$post("/article/switch-list", {});
+      let res = await this.$post("/article/list", {});
       that.articleList= res.data.items;
       console.log(that.articleList)
     },

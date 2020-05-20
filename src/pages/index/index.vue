@@ -69,7 +69,7 @@ export default {
       var that = this;
       let res = await this.$post("question", { type: that.activeIndex });
       console.log(res);
-      that.questionlist = res;
+      that.questionlist = res.data;
     },
     getUserInfo() {
       // 调用登录接口

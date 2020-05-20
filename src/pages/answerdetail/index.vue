@@ -143,7 +143,7 @@
               that.create_new_fav = false;
               if(that.fav_text=='已收藏'){
                 let res = await this.$post('fav/remove',{answer_id:that.id})
-                if(res.state==1){
+                if(res.code==1){
                     that.fav_text = '收藏';
                     that.fav_img = require('../../../static/image/star.png');
                     this.show_fav = false;
@@ -179,7 +179,7 @@
                 var that = this;
                 let res = await this.$post('fav/add',{answer_id:that.id,cate_id:cate_id})
                 
-                if(res.state==1){
+                if(res.code==1){
                     this.show_fav = !this.show_fav;
                     that.fav = res.fav;
                     wx.showToast({
@@ -195,7 +195,7 @@
                 var that = this;
                 let res = await this.$post('answer/write-answer',{author_id:that.content.author_id,answer_content:that.answer_content,
                   answer_id:that.id})
-                if(res.state==1){
+                if(res.code==1){
                   wx.showToast({
                         title:"发布成功",
                         duration: 2000,//提示的延迟时间，单位毫秒，默认：1500 
