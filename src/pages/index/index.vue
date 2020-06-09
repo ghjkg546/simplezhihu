@@ -2,14 +2,8 @@
   <div class="container">
     
     <div class="tabs">
-      <ul>
-        <li
-          v-for="(value, key) in tabs"
-          :key="index"
-          :class="activeIndex == key ?'active':''"
-          @click="tabClick(key)"
-        >{{ value }}</li>
-      </ul>
+      <titletab :tabs="tabs" :activeIndex="activeIndex" @reloadQuestion="getQuestionList"></titletab>
+      
     </div>
     <div class="no_content" v-show="questionlist.length == 0">
       <p>这里没有内容哦</p>
@@ -31,6 +25,7 @@
 </template>
 
 <script>
+import titletab from "../../components/titletab";
 import vueTabBar from "../../components/vueTabBar";
 export default {
   data() {
@@ -44,7 +39,7 @@ export default {
   },
 
   components: {
-    vueTabBar
+    vueTabBar,titletab
   },
 
   methods: {
@@ -66,7 +61,10 @@ export default {
       wx.navigateTo({ url });
     },
     async getQuestionList(type = 0) {
+
+      console.log(type)
       var that = this;
+      that.activeIndex = type;
       let res = await this.$post("question", { type: that.activeIndex });
       console.log(res);
       that.questionlist = res.data;

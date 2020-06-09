@@ -1,45 +1,24 @@
 <template>
-
   <div class="tabs">
         <ul>
           <li
-            v-for="(value, key) in tabs"
-            :key="index"
-            :class="activeIndex == key ?'active':''"
-            @click="tabClick(key)"
-          >{{ value }}</li>
+            v-for="(item, index) in tabs" :key="index"
+            :class="activeIndex == index ?'active':''"
+            @click="reloadQuestion(index)"
+          >{{ item }}</li>
         </ul>
       </div>
 </template>
 
 <script>
     export default {
-        props: ['tabs'],
-        data() {
-        },
+        props: ['tabs','activeIndex'],
         created() {
         },
         methods: {
-            /**
-             * 路由跳转
-             */
-            bindNavigateTo(url) {
-                wx.navigateTo({
-                    url
-                })
-            },
-
-            /**
-             * tabBar路由跳转
-             */
-            bindViewTap(url) {
-                // 回到顶部
-                if (url === '../index/main') {
-                    store.commit('setGroupsID', '');
-                }
-                wx.switchTab({
-                    url,
-                })
+            //刷新问题
+            reloadQuestion(index) {
+               this.$emit("reloadQuestion",index);
             },
         }
     }
